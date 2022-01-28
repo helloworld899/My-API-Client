@@ -27,10 +27,10 @@ public class ApiClient {
     public ApiClient(String apiAdress) {
         this.apiAdress = apiAdress;
     }
-}
+
 
     public ArrayList<String> getStringArray(String target) {
-        JsonObject countryObjt = new JsonObject();
+        JsonObject countryObj = new JsonObject();
 
         ArrayList<String> myArrayOfStrings = new ArrayList<>();
 
@@ -41,6 +41,130 @@ public class ApiClient {
     public Blog[] getBlogs() {
         Blog[] blogs = {};
 
-        String target = "/blogs/list"
+        String target = "/blogs/list";
+
+        System.out.println("Getting blog content from " + apiAdress + target);
+
+        // Se kommentarer i metoden addBlog()
+        BufferedReader reader;
+        String line;
+        StringBuilder responseContent = new StringBuilder();
+
+        // Se kommentarer i metoden addBlog()
+        try {
+            URL url = new URL(apiAdress+ target);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("accept", "application/json");
+
+            int status = connection.getResponseCode();
+
+            if (status >= 300) {
+                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                while ((line = reader.readLine()) != null) {
+                    responseContent.append(line);
+                }
+                reader.close();
+            } else {
+                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                while ((line = reader.readLine()) != null) {
+                    responseContent.append(line);
+                }
+                reader.close();
+            }
+
+            //System.out.println(responseContent.toString());
+            String jsonStr = responseContent.toString();
+
+            // Se kommentarer i metoden addMovie()
+            ObjectMapper mapper = new ObjectMapper();
+            blogs = mapper.readValue(jsonStr, Blog[].class);
+
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        } finally {
+            connection.disconnect();
+        }
+
+        return blogs;
     }
 
+    public boolean clearBlogs() {
+        String target = "/movies/clear"; // http://127.0.0.1:8080/api/v1/movies/clear
+
+        //System.out.println("Clearing movies from " + apiAddress + target);
+
+        boolean success = false;
+
+        try {
+            URL url = new URL(apiAdress + target);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            int status = connection.getResponseCode();
+
+            if (status < 300) {
+                success = true;
+            }
+
+            //System.out.println(responseContent.toString());
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        } finally {
+            connection.disconnect();
+        }
+
+        return success;
+    }
+
+    public boolean addBlog(Blog newBlog) {
+        String target = "/blogs/create";
+
+        //System.out.println("Adding movie at " + apiAddress + target);
+
+        boolean success = false;
+
+        try {
+            // Skapa ett URL-objekt och säg vilken adress vi vill skicka information till
+            URL url = new URL(apiAdress + target);
+
+            // Öppna nätverksanslutningen
+            connection = (HttpURLConnection) url.openConnection();
+
+            // Ange metod
+            connection.setRequestMethod("POST");
+
+            // Lägg till header (säg att vi vill skicka JSON-data)
+            connection.setRequestProperty("Content-Type", "application/json; utf-8");
+            connection.setDoOutput(true);
+
+            // Konvertera vårt Java-objekt (Movie) till JSON med hjälp av .toJSON-metoden i klassen Movie,
+            // och skriv den JSON-datan till vår nätverksanslutning med hjälp av en OutputStream
+            try (OutputStream os = connection.getOutputStream()) {
+                // Skapa en byte-array som innehåller JSON-datan
+                byte[] input = newBlog.toJson().getBytes(StandardCharsets.UTF_8);
+
+                // Skriv byte-arrayen till nätverksanslutningen (vi måste också ange hur lång strängen är)
+                os.write(input, 0, input.length);
+            }
+
+            // Vad fick vi för svar? Vad var HTTP-statuskoden vi fick tillbaka?
+            int status = connection.getResponseCode();
+
+            // Generellt om HTTP-koden är över 300 har något gått fel
+            // Om den är 299 eller lägre har det gått bra
+            // (Exempelvis är "200 OK" bra och "404 Not Found" inte bra)
+            if (status < 300) {
+                success = true;
+            }
+
+            //System.out.println(responseContent.toString());
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        } finally {
+            connection.disconnect();
+        }
+
+        return success;
+    }
+}

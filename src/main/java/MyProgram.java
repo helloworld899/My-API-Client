@@ -14,7 +14,7 @@ public class MyProgram {
         while (runProgram) {
             System.out.println();
             System.out.println("=========================================");
-            System.out.println("Hello hacker. What would you like to do?");
+            System.out.println("Hello! What would you like to do?");
             System.out.println("1. Get list of blogs");
             System.out.println("2. Clear list of blogs");
             System.out.println("3. Add a blog to the list");
