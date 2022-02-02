@@ -22,7 +22,8 @@ public class MyProgram {
             System.out.println("3. Clear list of blogs");
             System.out.println("4. Delete a blog");
             System.out.println("5. Update a blog");
-            System.out.println("6. Exit program");
+            System.out.println("6. Search for a blog");
+            System.out.println("7. Exit program");
             System.out.println("=========================================\n");
             System.out.println();
 
@@ -47,6 +48,9 @@ public class MyProgram {
                     updateBlog();
                     break;
                 case 6:
+                    searchBlog();
+                    break;
+                case 7:
                     System.out.println("Goodbye!!");
                     runProgram = false;
 
@@ -71,7 +75,7 @@ public class MyProgram {
                 System.out.printf("Blog post id: %s \n", id + "\n" + text + "\n");
                 System.out.println("                         Posted on: " + date);
                 System.out.println("-------------------------------------------");
-                System.out.println("");
+
             }
         } else {
             System.out.println("No blogs in the list... ");
@@ -112,15 +116,15 @@ public class MyProgram {
     public void deleteBlog() {
         System.out.println("Type in Blog ID to remove");
         int getID = getUserInt();
-        Blog[] blog = myApiClient.listBlogs();
+        Blog[] blogs = myApiClient.listBlogs();
         int i;
-        if (blog.length > 0) {
-            for (i = 0; i < blog.length; i++) {
-                if (getID == blog[i].id) {
+        if (blogs.length > 0) {
+            for (i = 0; i < blogs.length; i++) {
+                if (getID == blogs[i].id) {
                     break;
                 }
             }
-            boolean success = myApiClient.deleteSpecificBlogByID(blog[i]);
+            boolean success = myApiClient.deleteSpecificBlogByID(blogs[i]);
             if (success) {
                 System.out.println("This blog id nummer" + getID + ", is now deleted");
             }
@@ -159,6 +163,34 @@ public class MyProgram {
         }
     }
 
+    public void searchBlog() {
+
+        System.out.println("Type in the blog ID you want to find");
+        int getID = getUserInt();
+        Blog[] blogs = myApiClient.listBlogs();
+
+        if (blogs.length > 0) {
+            for (int i = 0; i < blogs.length; i++) {
+                if (getID == blogs[i].id) {
+                    String title = blogs[i].title;
+                    String text = blogs[i].text;
+                    String date = blogs[i].date;
+
+                    System.out.println("\n Title: " + title);
+                    System.out.println(text);
+                    System.out.println("       Posted on: " + date);
+
+                    Blog viewBlog = new Blog();
+                    boolean success = myApiClient.findBlogbyID(viewBlog);
+                    if (success) {
+                        System.out.println("\n Here is the blog you wanted");
+                    } else {
+                        System.out.println("Issue finding the blog you wanted");
+                    }
+                }
+            }
+        }
+    }
 
     public String getUserString() {
         Scanner myScanner = new Scanner(System.in);
@@ -194,4 +226,7 @@ public class MyProgram {
         return myInteger;
     }
 }
+
+
+
 

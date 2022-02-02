@@ -232,4 +232,31 @@ public class ApiClient {
         return success;
     }
 
+    public boolean findBlogbyID (Blog oneBlog ) {
+        String target = "/blogs/view/" + oneBlog.id;
+
+        //  System.out.println("Deleting a blog from " + apiAdress + target);
+
+        boolean success = false;
+
+        try {
+            URL url = new URL(apiAdress + target);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            int status = connection.getResponseCode();
+
+            if (status < 300) {
+                success = true;
+            }
+
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        } finally {
+            connection.disconnect();
+        }
+
+        return success;
+    }
+
 }
