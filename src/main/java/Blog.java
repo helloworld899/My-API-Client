@@ -1,7 +1,5 @@
 import java.io.StringWriter;
-import java.io.StringWriter;
 import java.io.Writer;
-import java.time.LocalDate;
 
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.JsonKey;
@@ -10,13 +8,17 @@ import com.github.cliftonlabs.json_simple.Jsonable;
 
 public class Blog implements Jsonable {
     public int id;
-    public LocalDate date;
+    public String title;
     public String text;
+    public String date;
+
+
 
     enum keys implements JsonKey {
         ID("id"),
-        DATE("date"),
-        TEXT("text");
+        TITLE("title"),
+        TEXT("text"),
+        DATE("date");
 
         private final Object value;
         /**
@@ -35,24 +37,27 @@ public class Blog implements Jsonable {
 
         @Override
         public Object getValue() {
-            /* Can represent a valid default, error value, or null adhoc for the JsonKey. See the javadocs for more
-             * information about its intended use. */
             return this.value;
         }
     }
 
-    //Konstruktor
+    //Constructors
     public Blog() {
     }
 
-    public Blog(String text) {
+    public Blog(String title, String text, String date) {
+        this.title = title;
         this.text = text;
+        this.date = date;
+
     }
 
-    public Blog(int id, LocalDate date, String text) {
+    public Blog(int id, String title, String text, String date) {
         this.id = id;
-        this.date = date;
+        this.title = title;
         this.text = text;
+        this.date = date;
+
     }
 
 
@@ -65,12 +70,12 @@ public class Blog implements Jsonable {
         this.id = id;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public String getTitle() {
+        return title;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getText() {
@@ -81,13 +86,23 @@ public class Blog implements Jsonable {
         this.text = text;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+
+
     @Override
     public String toJson() {
         final StringWriter writable = new StringWriter();
         try {
             this.toJson(writable);
         } catch (final Exception e) {
-            /* See java.io.StringWriter. */
+
         }
         return writable.toString();
     }
@@ -96,9 +111,10 @@ public class Blog implements Jsonable {
     public void toJson(final Writer writable) {
         try {
             final JsonObject json = new JsonObject();
+            json.put(keys.ID.getKey(), this.getId());
+            json.put(keys.TITLE.getKey(), this.getTitle());
             json.put(keys.TEXT.getKey(), this.getText());
             json.put(keys.DATE.getKey(), this.getDate());
-            json.put(keys.ID.getKey(), this.getId());
             json.toJson(writable);
         } catch (Exception e) {
             System.out.println("Exception: " + e);
@@ -107,8 +123,11 @@ public class Blog implements Jsonable {
 
     @Override
     public String toString() {
-        return "JsonSimpleExample [id=\" + this.id + \", title=" + this.text + ", rating=" + this.date + "]";
+        return "Blog{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", text='" + text + '\'' +
+                ", date='" + date + '\'' +
+                '}';
     }
-
-
 }

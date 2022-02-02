@@ -28,7 +28,7 @@ public class ApiClient {
         this.apiAdress = apiAdress;
     }
 
-
+  // TODO: !!!!!!!!!!!!!!!!!!!!!!! VARFÖR GRÅÅÅÅ???!!!
     public ArrayList<String> getStringArray(String target) {
         JsonObject countryObj = new JsonObject();
 
@@ -38,7 +38,7 @@ public class ApiClient {
     }
 
     //Metod för att hämta blogginlägg
-    public Blog[] getBlogs() {
+    public Blog[] listBlogs() {
         Blog[] blogs = {};
 
         String target = "/blogs/list";
@@ -89,8 +89,8 @@ public class ApiClient {
         return blogs;
     }
 
-    public boolean clearBlogs() {
-        String target = "/movies/clear"; // http://127.0.0.1:8080/api/v1/movies/clear
+    public boolean clearAllBlogs() {
+        String target = "/blogs/clear"; // http://127.0.0.1:8080/api/v1/movies/clear
 
         //System.out.println("Clearing movies from " + apiAddress + target);
 
@@ -99,7 +99,7 @@ public class ApiClient {
         try {
             URL url = new URL(apiAdress + target);
             connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
+            connection.setRequestMethod("DELETE");
 
             int status = connection.getResponseCode();
 
@@ -167,4 +167,69 @@ public class ApiClient {
 
         return success;
     }
+
+    public boolean deleteSpecificBlogByID (Blog deleteBlog) {
+        String target = "/blogs/delete/" + deleteBlog.id;
+
+      //  System.out.println("Deleting a blog from " + apiAdress + target);
+
+        boolean success = false;
+
+        try {
+            URL url = new URL(apiAdress + target);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("DELETE");
+
+            int status = connection.getResponseCode();
+
+            if (status < 300) {
+                success = true;
+            }
+
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        } finally {
+            connection.disconnect();
+        }
+
+        return success;
+    }
+
+
+    public boolean updateSpecificBlogByID (Blog updateBlog) {
+        String target = "/blogs/update/" + updateBlog.id;
+        boolean success = false;
+
+        try {
+
+            URL url = new URL(apiAdress + target);
+
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json; utf-8");
+            connection.setDoOutput(true);
+
+            try (OutputStream os = connection.getOutputStream()) {
+
+                byte[] input = updateBlog.toJson().getBytes(StandardCharsets.UTF_8);
+
+                os.write(input, 0, input.length);
+            }
+
+
+            int status = connection.getResponseCode();
+
+            if (status < 300) {
+                success = true;
+            }
+
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+        } finally {
+            connection.disconnect();
+        }
+
+        return success;
+    }
+
 }
