@@ -16,14 +16,16 @@ public class MyProgram {
         while (runProgram) {
             System.out.println();
             System.out.println("=========================================");
-            System.out.println("Hello! What would you like to do?");
-            System.out.println("1. Get list of blogs");
-            System.out.println("2. Add a blog to the list");
-            System.out.println("3. Clear list of blogs");
-            System.out.println("4. Delete a blog");
-            System.out.println("5. Update a blog");
-            System.out.println("6. Search for a blog");
-            System.out.println("7. Exit program");
+            System.out.println("|  Welcome! What would you like to do?  |");
+            System.out.println("=========================================");
+            System.out.println("| Pick by number:                       |");
+            System.out.println("|     [1] Get list of blogs             |");
+            System.out.println("|     [2] Add a blog to the list        |");
+            System.out.println("|     [3] Clear list of blogs           |");
+            System.out.println("|     [4] Delete a blog                 |");
+            System.out.println("|     [5] Update a blog                 |");
+            System.out.println("|     [6] Search for a blog             |");
+            System.out.println("|     [7] Exit program                  |");
             System.out.println("=========================================\n");
             System.out.println();
 
@@ -62,7 +64,7 @@ public class MyProgram {
         Blog[] blogs = myApiClient.listBlogs();
 
         System.out.println("All written blog posts");
-        System.out.println("--------------------------------------");
+        System.out.println("------------------------------------------");
 
         if (blogs.length > 0) {
             for (int i = 0; i < blogs.length; i++) {
@@ -71,8 +73,8 @@ public class MyProgram {
                 String text = blogs[i].text;
                 String date = blogs[i].date;
 
-                System.out.println("Title: " + title);
-                System.out.printf("Blog post id: %s \n", id + "\n" + text + "\n");
+                System.out.println("Blog post id: " + "#" + id);
+                System.out.printf("Title: %s \n", title + "\n" + "Content: " + text + "\n");
                 System.out.println("                         Posted on: " + date);
                 System.out.println("-------------------------------------------");
 
@@ -105,6 +107,7 @@ public class MyProgram {
     }
 
     public void clearListOfBlogs() {
+
         if (myApiClient.clearAllBlogs()) {
             System.out.println("List of blogs cleared!");
         } else {
@@ -116,79 +119,92 @@ public class MyProgram {
     public void deleteBlog() {
         System.out.println("Type in Blog ID to remove");
         int getID = getUserInt();
-        Blog[] blogs = myApiClient.listBlogs();
-        int i;
-        if (blogs.length > 0) {
-            for (i = 0; i < blogs.length; i++) {
-                if (getID == blogs[i].id) {
-                    break;
-                }
-            }
-            boolean success = myApiClient.deleteSpecificBlogByID(blogs[i]);
-            if (success) {
-                System.out.println("This blog id nummer" + getID + ", is now deleted");
-            }
+        Blog blog = myApiClient.getBlogByID(getID);
+
+        if (blog != null) {
+
+            int blogID = blog.getId();
+
+            myApiClient.deleteSpecificBlogByID(blog);
+
+            System.out.println("Blog ID: " + blogID + " has now been deleted!");
+
+
         } else {
-            System.out.println("Issue deleting this");
+            System.out.println("No blog with this ID or has been deleted");
         }
     }
 
 
     public void updateBlog() {
-        Blog[] blog = myApiClient.listBlogs();
         System.out.println("Type in the blog ID you want to Update");
         int getID = getUserInt();
+        Blog blog = myApiClient.getBlogByID(getID);
 
-        if (blog.length > 0) {
-            for (int i = 0; i < blog.length; i++) {
-                if (getID == blog[i].id) {
-                    System.out.println("Update the Title?");
-                    String title = getUserString();
 
-                    System.out.println("Content:");
-                    String text = getUserString();
+        if (blog != null) {
 
-                    System.out.println("Date");
-                    String date = getUserString();
+            System.out.println("What do you wanna change?");
+            System.out.println("1. Title");
+            System.out.println("2. Content");
+            System.out.println("3. Date");
+            int userInput = getUserInt();
 
-                    Blog newBlog = new Blog(getID, title, text, date);
-                    boolean success = myApiClient.updateSpecificBlogByID(newBlog);
-                    if (success) {
-                        System.out.println("Blog updated!");
-                    } else {
-                        System.out.println("Issue updating Blog. :(");
-                    }
-                }
+            if (userInput == 1) {
+                System.out.println("Update the Title");
+                String blogTitle = getUserString();
+                blog.setTitle(blogTitle);
             }
+            if (userInput == 2) {
+                System.out.println("Content:");
+                String blogText = getUserString();
+                blog.setText(blogText);
+            }
+            if (userInput == 3) {
+                System.out.println("Date");
+                String blogDate = getUserString();
+                blog.setDate(blogDate);
+            }
+
+            int blogID = blog.getId();
+
+            myApiClient.updateSpecificBlogByID(getID, blog);
+
+            System.out.println("Blog ID: " + blogID + " updated!");
+
+        } else {
+            System.out.println("Issue updating Blog. :(");
         }
     }
+
 
     public void searchBlog() {
 
         System.out.println("Type in the blog ID you want to find");
         int getID = getUserInt();
-        Blog[] blogs = myApiClient.listBlogs();
 
-        if (blogs.length > 0) {
-            for (int i = 0; i < blogs.length; i++) {
-                if (getID == blogs[i].id) {
-                    String title = blogs[i].title;
-                    String text = blogs[i].text;
-                    String date = blogs[i].date;
+        Blog blog = myApiClient.getBlogByID(getID);
 
-                    System.out.println("\n Title: " + title);
-                    System.out.println(text);
-                    System.out.println("       Posted on: " + date);
+        System.out.println("Blogs by ID");
+        System.out.println("---------------------------------");
 
-                    Blog viewBlog = new Blog();
-                    boolean success = myApiClient.findBlogbyID(viewBlog);
-                    if (success) {
-                        System.out.println("\n Here is the blog you wanted");
-                    } else {
-                        System.out.println("Issue finding the blog you wanted");
-                    }
-                }
-            }
+
+        if (blog != null) {
+
+            int blogID = blog.getId();
+            String blogTitle = blog.getTitle();
+            String blogText = blog.getText();
+            String blogDate = blog.getDate();
+
+            System.out.println("Blog ID: " + blogID);
+            System.out.println("\n Title: " + blogTitle);
+            System.out.println(blogText);
+            System.out.println("       Posted on: " + blogDate);
+
+
+            System.out.println("\n Here is the blog you wanted");
+        } else {
+            System.out.println("Issue finding the blog you wanted");
         }
     }
 
@@ -199,7 +215,7 @@ public class MyProgram {
 
         while (true) {
             try {
-                System.out.println("> ");
+                System.out.print("> ");
                 myString = myScanner.nextLine();
                 break;
             } catch (Exception e) {
