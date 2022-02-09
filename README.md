@@ -2,6 +2,8 @@
 
 Det här är en API-klient som skickar API-förfrågningar (requests) till http://127.0.0.1:8080.
 
+Denna klient kan exekveras om man antingen har BlogServern igång eller med en Docker container.
+
 Med den här klienten kan du:
 
 - Lista bloggar (till /api/v1/blogs/**list**)
