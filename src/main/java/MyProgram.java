@@ -53,7 +53,7 @@ public class MyProgram {
                     searchBlog();
                     break;
                 case 7:
-                    System.out.println("Goodbye!!");
+                    System.out.println("Have a good day, bye!");
                     runProgram = false;
 
             }
@@ -61,9 +61,10 @@ public class MyProgram {
     }
 
     public void printListOfBlogs() {
+
         Blog[] blogs = myApiClient.listBlogs();
 
-        System.out.println("All written blog posts");
+        System.out.println("Listing all blog posts");
         System.out.println("------------------------------------------");
 
         if (blogs.length > 0) {
@@ -86,13 +87,17 @@ public class MyProgram {
 
 
     public void addBlog() {
+
+        System.out.println("Add a blog entry");
+        System.out.println("---------------------------------");
+
         System.out.println("Title of your blog");
         String title = getUserString();
 
         System.out.println("Write something about your day");
         String text = getUserString();
 
-        System.out.println("Type in today's date in format yy/mm/dd");
+        System.out.println("Type in today's date in YY/MM/DD");
         String date = getUserString();
 
         Blog newBlog = new Blog(title, text, date);
@@ -108,6 +113,9 @@ public class MyProgram {
 
     public void clearListOfBlogs() {
 
+        System.out.println("Clear the whole list");
+        System.out.println("---------------------------------");
+
         if (myApiClient.clearAllBlogs()) {
             System.out.println("List of blogs cleared!");
         } else {
@@ -117,17 +125,22 @@ public class MyProgram {
 
 
     public void deleteBlog() {
+
+        System.out.println("Delete blog by ID");
+        System.out.println("---------------------------------");
+
         System.out.println("Type in Blog ID to remove");
         int getID = getUserInt();
         Blog blog = myApiClient.getBlogByID(getID);
 
+
         if (blog != null) {
 
-            int blogID = blog.getId();
+            // int blogID = blog.getId();  <-- Man kan om man vill skapa nytt sätt att hämta ID numret genom att deklarera på nytt
 
             myApiClient.deleteSpecificBlogByID(blog);
 
-            System.out.println("Blog ID: " + blogID + " has now been deleted!");
+            System.out.println("Blog ID: " + getID + " has now been deleted!");
 
 
         } else {
@@ -137,40 +150,44 @@ public class MyProgram {
 
 
     public void updateBlog() {
+
+        System.out.println("Update blog by ID");
+        System.out.println("---------------------------------");
+
         System.out.println("Type in the blog ID you want to Update");
         int getID = getUserInt();
-        Blog blog = myApiClient.getBlogByID(getID);
+        Blog blog = myApiClient.getBlogByID(getID); //Vi använder vi metoden getBlogByID för att hämta en viss ID
 
 
         if (blog != null) {
 
-            System.out.println("What do you wanna change?");
+            System.out.println("Which part of the blog do you want to change?");
             System.out.println("1. Title");
             System.out.println("2. Content");
             System.out.println("3. Date");
             int userInput = getUserInt();
 
             if (userInput == 1) {
-                System.out.println("Update the Title");
+                System.out.println("Update the Title: ");
                 String blogTitle = getUserString();
                 blog.setTitle(blogTitle);
             }
             if (userInput == 2) {
-                System.out.println("Content:");
+                System.out.println("Content: ");
                 String blogText = getUserString();
                 blog.setText(blogText);
             }
             if (userInput == 3) {
-                System.out.println("Date");
+                System.out.println("Date: ");
                 String blogDate = getUserString();
                 blog.setDate(blogDate);
             }
 
-            int blogID = blog.getId();
+            // int blogID = blog.getId();
 
             myApiClient.updateSpecificBlogByID(getID, blog);
 
-            System.out.println("Blog ID: " + blogID + " updated!");
+            System.out.println("Blog ID: " + getID + " updated!");
 
         } else {
             System.out.println("Issue updating Blog. :(");
@@ -180,13 +197,13 @@ public class MyProgram {
 
     public void searchBlog() {
 
+        System.out.println("Blogs by ID");
+        System.out.println("---------------------------------");
+
         System.out.println("Type in the blog ID you want to find");
         int getID = getUserInt();
 
         Blog blog = myApiClient.getBlogByID(getID);
-
-        System.out.println("Blogs by ID");
-        System.out.println("---------------------------------");
 
 
         if (blog != null) {
@@ -196,10 +213,9 @@ public class MyProgram {
             String blogText = blog.getText();
             String blogDate = blog.getDate();
 
-            System.out.println("Blog ID: " + blogID);
-            System.out.println("\n Title: " + blogTitle);
-            System.out.println(blogText);
-            System.out.println("       Posted on: " + blogDate);
+            System.out.println("Blog ID: " + "#" + blogID);
+            System.out.printf("Title: %s \n", blogTitle + "\n" + "Content: " + blogText + "\n");
+            System.out.println("                         Posted on: " + blogDate);
 
 
             System.out.println("\n Here is the blog you wanted");
